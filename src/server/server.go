@@ -6,10 +6,14 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/JuanConde27/energy-microservice/src/config"
+	"github.com/JuanConde27/energy-microservice/src/utils"
 )
 
 func Start() {
 	config.Migrate()
+
+	csvPath := "test_bia.csv"
+	utils.LoadCSVData(csvPath)
 
 	router := mux.NewRouter()
 
