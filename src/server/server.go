@@ -17,6 +17,8 @@ func Start() {
 
 	router := mux.NewRouter()
 
+	RegisterRoutes(router)
+
 	GetCORSConfig()
 
 	server := http.Server{
