@@ -11,14 +11,16 @@ import (
 )
 
 func GetConnection() *gorm.DB {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error cargando el archivo .env")
+	if _, err := os.Stat(".env"); err == nil {
+		err = godotenv.Load()
+		if err != nil {
+			log.Println("⚠️  Advertencia: No se pudo cargar el archivo .env, usando variables de entorno del sistema.")
+		}
 	}
 
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		log.Fatal("DATABASE_URL no está definida en el archivo .env")
+		log.Fatal("❌ DATABASE_URL no está definida en las variables de entorno.")
 	}
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})

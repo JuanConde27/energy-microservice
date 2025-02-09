@@ -43,13 +43,13 @@ energy-microservice/
 
 ## **Prerequisites**
 
-- Install **Go** (≥1.18)
+- Install **Go** (≥1.22)
 - Install **PostgreSQL**
 - Install **Gorilla Mux** (for routing)
 - Install **GORM** (for database handling)
 - Install **Testify** and **SQLMock** (for unit tests)
 
-## **Installation**
+## **Installation (Local Setup)**
 
 Clone the repository and install dependencies:
 
@@ -59,15 +59,15 @@ cd energy-microservice
 go mod tidy
 ```
 
-## **Setting Up the Database**
+### **Setting Up the Database**
 
-Update your **PostgreSQL** connection details in `.env`:
+Update your **PostgreSQL** connection details in `.env` if using a local database:
 
 ```sh
 DATABASE_URL=YOUR_DATABASE_URL_HERE
 ```
 
-## **Running the Microservice**
+### **Running the Microservice (Locally)**
 
 Start the service:
 
@@ -77,30 +77,71 @@ go run main.go
 
 The server will start at `http://localhost:3000`.
 
+## **Running with Docker Compose**
+
+To run the microservice with **Docker Compose**, execute:
+
+```sh
+docker-compose up --build
+```
+
+This will:
+
+- Build and start the **PostgreSQL database** and the **Go application**.
+- Automatically create and migrate the database.
+- Expose the service on **port 3000**.
+
+### **Stopping the Service**
+
+```sh
+docker-compose down
+```
+
+This will stop all running containers.
+
 ## **CSV File Loading**
 
-To load data from a CSV file, place the file in the project root and specify its path in `src/server/server.go`:
+The microservice loads energy consumption data from a **CSV file**. The path varies depending on whether you run the service **locally** or **inside Docker**:
+
+### **Running Locally**
+
+Place the CSV file in the **project root** and specify its path in `src/server/server.go`:
 
 ```go
 csvPath := "test_bia.csv"
+```
+
+### **Running with Docker**
+
+Since the application runs inside a **Docker container**, the path should be set to `/app/test_bia.csv` in `src/server/server.go`:
+
+```go
+csvPath := "/app/test_bia.csv"
+```
+
+Ensure the CSV file is included in the Docker context, or mount it as a volume in `docker-compose.yml`:
+
+```yaml
+volumes:
+  - ./test_bia.csv:/app/test_bia.csv
 ```
 
 ## **Usage**
 
 ### **Energy Consumption Endpoint**
 
-#### **GET `/consumption`**
+#### **GET **``
 
 This endpoint retrieves energy consumption data based on parameters.
 
 ### **Query Parameters**
 
-| Parameter      | Type     | Required | Description |
-|---------------|---------|----------|-------------|
-| `meters_ids`  | string  | ✅ Yes  | Comma-separated list of meter IDs (e.g., `1,2,3`) |
-| `start_date`  | string  | ✅ Yes  | Start date in **YYYY-MM-DD** format |
-| `end_date`    | string  | ✅ Yes  | End date in **YYYY-MM-DD** format |
-| `kind_period` | string  | ✅ Yes  | `daily`, `weekly`, or `monthly` |
+| Parameter     | Type   | Required | Description                                       |
+| ------------- | ------ | -------- | ------------------------------------------------- |
+| `meters_ids`  | string | ✅ Yes    | Comma-separated list of meter IDs (e.g., `1,2,3`) |
+| `start_date`  | string | ✅ Yes    | Start date in **YYYY-MM-DD** format               |
+| `end_date`    | string | ✅ Yes    | End date in **YYYY-MM-DD** format                 |
+| `kind_period` | string | ✅ Yes    | `daily`, `weekly`, or `monthly`                   |
 
 ### **Examples**
 
@@ -121,12 +162,6 @@ curl "http://localhost:3000/consumption?meters_ids=1&start_date=2023-06-01&end_d
 ```sh
 curl "http://localhost:3000/consumption?meters_ids=1,2,3&start_date=2023-06-01&end_date=2023-06-26&kind_period=weekly"
 ```
-
-### **How to Modify Query Parameters**
-
-1. **Change meter IDs:** Update `meters_ids=1,2,3` with the desired meter IDs.
-2. **Change date range:** Modify `start_date` and `end_date` (format: YYYY-MM-DD).
-3. **Change period type:** Use `kind_period=daily`, `kind_period=weekly`, or `kind_period=monthly`.
 
 ## **Running Unit Tests**
 

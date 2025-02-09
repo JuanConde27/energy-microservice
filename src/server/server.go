@@ -12,7 +12,7 @@ import (
 func Start() {
 	config.Migrate()
 
-	csvPath := "test_bia.csv"
+	csvPath := "/app/test_bia.csv"
 	utils.LoadCSVData(csvPath)
 
 	router := mux.NewRouter()
