@@ -73,7 +73,6 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
     start, _ := time.Parse("2006-01-02", startDate)
     end, _ := time.Parse("2006-01-02", endDate)
     
-    // Agregamos 23 horas, 59 minutos y 59 segundos para incluir todo el día final.
     end = end.Add(23*time.Hour + 59*time.Minute + 59*time.Second)
 
     if period == "weekly" {
@@ -123,7 +122,6 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
         dateMap[c.MeterID][periodStr] = c.Consumption
     }
     
-    // 🔍 Verificar valores en dateMap antes de construir la respuesta final
     fmt.Println("✅ Verificación final de dateMap:")
     for meterID, periods := range dateMap {
         for period, consumption := range periods {
@@ -131,7 +129,6 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
         }
     }
 
-    // Ordenamos las fechas en el periodo antes de llenar los datos en response
     sort.SliceStable(response.Period, func(i, j int) bool {
         dateI, _ := time.Parse("Jan 2", response.Period[i])
         dateJ, _ := time.Parse("Jan 2", response.Period[j])

@@ -19,14 +19,12 @@ func NewConsumptionRepository(db *gorm.DB) *ConsumptionRepository {
 func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate, endDate time.Time, periodType string) ([]models.ConsumptionAggregate, error) {
 	var consumptions []models.ConsumptionAggregate
 
-	// 🔍 Imprimir parámetros antes de ejecutar la consulta
 	fmt.Println("📌 Ejecutando GetConsumptionByPeriod")
 	fmt.Println("🔹 Meter IDs:", meterIDs)
 	fmt.Println("🔹 Start Date:", startDate)
 	fmt.Println("🔹 End Date:", endDate)
 	fmt.Println("🔹 Period Type:", periodType)
 
-	// 🔥 Si es "weekly", usamos una consulta diferente
 	if periodType == "weekly" {
 		query := `
             SELECT meter_id, 
@@ -44,7 +42,6 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
 			return nil, err
 		}
 
-		// 🔍 Imprimir los datos que devuelve la consulta
 		fmt.Println("✅ Datos obtenidos de la BD (Weekly):")
 		for _, c := range consumptions {
 			fmt.Println("Meter ID:", c.MeterID, "Periodo:", c.Period, "Consumo:", c.Consumption)
@@ -53,7 +50,6 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
 		return consumptions, nil
 	}
 
-	// 🔥 Si no es "weekly", usamos DATE_TRUNC
 	var dateTrunc string
 	switch periodType {
 	case "monthly":
@@ -80,7 +76,6 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
 		return nil, err
 	}
 
-	// 🔍 Imprimir los datos que devuelve la consulta
 	fmt.Println("✅ Datos obtenidos de la BD:")
 	for _, c := range consumptions {
 		fmt.Println("Meter ID:", c.MeterID, "Periodo:", c.Period, "Consumo:", c.Consumption)
