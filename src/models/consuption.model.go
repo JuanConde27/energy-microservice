@@ -11,6 +11,12 @@ type Consumption struct {
 	Timestamp  time.Time `gorm:"not null" json:"timestamp"`
 }
 
+type ConsumptionAggregate struct {
+	MeterID     int       `json:"meter_id"`
+	Consumption float64   `json:"consumption"`
+	Period      time.Time `json:"period"`
+}
+
 func (c *Consumption) TableName() string {
 	return "consumptions"
 }
