@@ -48,6 +48,7 @@ energy-microservice/
 - Install **Gorilla Mux** (for routing)
 - Install **GORM** (for database handling)
 - Install **Testify** and **SQLMock** (for unit tests)
+- **Place the file `test_bia.csv` in the root of the project before running the service.**
 
 ## **Installation (Local Setup)**
 
