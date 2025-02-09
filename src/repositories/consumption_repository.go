@@ -2,11 +2,16 @@ package repositories
 
 import (
 	"fmt"
+	"github.com/lib/pq"
 	"time"
 
 	"github.com/JuanConde27/energy-microservice/src/models"
 	"gorm.io/gorm"
 )
+
+type ConsumptionRepositoryInterface interface {
+    GetConsumptionByPeriod(meterIDs []int, startDate, endDate time.Time, periodType string) ([]models.ConsumptionAggregate, error)
+}
 
 type ConsumptionRepository struct {
 	DB *gorm.DB
@@ -18,12 +23,6 @@ func NewConsumptionRepository(db *gorm.DB) *ConsumptionRepository {
 
 func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate, endDate time.Time, periodType string) ([]models.ConsumptionAggregate, error) {
 	var consumptions []models.ConsumptionAggregate
-
-	fmt.Println("📌 Ejecutando GetConsumptionByPeriod")
-	fmt.Println("🔹 Meter IDs:", meterIDs)
-	fmt.Println("🔹 Start Date:", startDate)
-	fmt.Println("🔹 End Date:", endDate)
-	fmt.Println("🔹 Period Type:", periodType)
 
 	if periodType == "weekly" {
 		query := `
@@ -42,11 +41,6 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
 			return nil, err
 		}
 
-		fmt.Println("✅ Datos obtenidos de la BD (Weekly):")
-		for _, c := range consumptions {
-			fmt.Println("Meter ID:", c.MeterID, "Periodo:", c.Period, "Consumo:", c.Consumption)
-		}
-
 		return consumptions, nil
 	}
 
@@ -61,16 +55,17 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
 	}
 
 	query := `
-        SELECT meter_id, 
-               COALESCE(SUM(consumption), 0) AS consumption, 
-               DATE_TRUNC($1, timestamp) AS period
-        FROM consumptions
-        WHERE meter_id = ANY($2)
-          AND timestamp >= $3 AND timestamp < ($4::timestamp + interval '1 day') 
-        GROUP BY meter_id, period
-        ORDER BY period ASC;
-    `
-	err := r.DB.Raw(query, dateTrunc, meterIDs, startDate, endDate).Scan(&consumptions).Error
+    SELECT meter_id, 
+           COALESCE(SUM(consumption), 0) AS consumption, 
+           DATE_TRUNC($1, timestamp) AS period
+    FROM consumptions
+    WHERE meter_id = ANY($2)
+      AND timestamp >= $3 AND timestamp < ($4::timestamp + interval '1 day') 
+    GROUP BY meter_id, period
+    ORDER BY period ASC;
+`
+	err := r.DB.Raw(query, dateTrunc, pq.Array(meterIDs), startDate, endDate).Scan(&consumptions).Error
+
 	if err != nil {
 		fmt.Println("❌ Error en consulta SQL:", err)
 		return nil, err

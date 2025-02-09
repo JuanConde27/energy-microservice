@@ -24,12 +24,13 @@ type ConsumptionDataGraph struct {
 }
 
 type ConsumptionService struct {
-    Repo *repositories.ConsumptionRepository
+    Repo repositories.ConsumptionRepositoryInterface
 }
 
-func NewConsumptionService(repo *repositories.ConsumptionRepository) *ConsumptionService {
+func NewConsumptionService(repo repositories.ConsumptionRepositoryInterface) *ConsumptionService {
     return &ConsumptionService{Repo: repo}
 }
+
 
 func formatPeriod(t time.Time, period string, startDate, endDate time.Time) string {
     if t.Before(startDate) || t.After(endDate) {
@@ -117,16 +118,7 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
             continue
         }
     
-        fmt.Println("🧐 Verificando formato: ", c.Period, "➡", periodStr)
-    
         dateMap[c.MeterID][periodStr] = c.Consumption
-    }
-    
-    fmt.Println("✅ Verificación final de dateMap:")
-    for meterID, periods := range dateMap {
-        for period, consumption := range periods {
-            fmt.Println("Meter ID:", meterID, "Periodo:", period, "Consumo:", consumption)
-        }
     }
 
     sort.SliceStable(response.Period, func(i, j int) bool {
