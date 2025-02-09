@@ -118,7 +118,16 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
             continue
         }
     
+        fmt.Println("🧐 Verificando formato: ", c.Period, "➡", periodStr)
+    
         dateMap[c.MeterID][periodStr] = c.Consumption
+    }
+    
+    fmt.Println("✅ Verificación final de dateMap:")
+    for meterID, periods := range dateMap {
+        for period, consumption := range periods {
+            fmt.Println("Meter ID:", meterID, "Periodo:", period, "Consumo:", consumption)
+        }
     }
 
     sort.SliceStable(response.Period, func(i, j int) bool {
