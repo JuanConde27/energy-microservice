@@ -3,7 +3,6 @@ package services
 import (
     "strings"
     "time"
-	"fmt"
 	"sort"
 
     "github.com/JuanConde27/energy-microservice/src/repositories"
@@ -118,16 +117,7 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
             continue
         }
     
-        fmt.Println("🧐 Verificando formato: ", c.Period, "➡", periodStr)
-    
         dateMap[c.MeterID][periodStr] = c.Consumption
-    }
-    
-    fmt.Println("✅ Verificación final de dateMap:")
-    for meterID, periods := range dateMap {
-        for period, consumption := range periods {
-            fmt.Println("Meter ID:", meterID, "Periodo:", period, "Consumo:", consumption)
-        }
     }
 
     sort.SliceStable(response.Period, func(i, j int) bool {
@@ -147,7 +137,6 @@ func (s *ConsumptionService) GetConsumption(meterIDs []int, startDate, endDate s
         }
 
         for _, date := range response.Period {
-            fmt.Printf("📌 Asignando en response: Meter ID: %d Periodo: %s Consumo: %f\n", meterID, date, dateMap[meterID][date])
             data.Active = append(data.Active, dateMap[meterID][date])
             data.ReactiveInductive = append(data.ReactiveInductive, 0)
             data.ReactiveCapacitive = append(data.ReactiveCapacitive, 0)

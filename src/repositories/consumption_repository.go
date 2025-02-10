@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"fmt"
 	"github.com/lib/pq"
 	"time"
+	"fmt"
 
 	"github.com/JuanConde27/energy-microservice/src/models"
 	"gorm.io/gorm"
@@ -41,7 +41,7 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
             GROUP BY meter_id, period
             ORDER BY period ASC;
         `
-		err := r.DB.Raw(query, startDate, meterIDs, endDate).Scan(&consumptions).Error
+		err := r.DB.Raw(query, startDate, pq.Array(meterIDs), endDate).Scan(&consumptions).Error
 		if err != nil {
 			fmt.Println("❌ Error en consulta SQL (weekly):", err)
 			return nil, err
@@ -67,16 +67,12 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
         ) c ON c.meter_id = meters.meter_id AND c.month = gs.month
         ORDER BY gs.month ASC;
         `
-		err := r.DB.Raw(query, startDate, endDate, meterIDs).Scan(&consumptions).Error
+		err := r.DB.Raw(query, startDate, endDate, pq.Array(meterIDs)).Scan(&consumptions).Error
 		if err != nil {
 			fmt.Println("❌ Error en consulta SQL (monthly):", err)
 			return nil, err
 		}
 
-		fmt.Println("✅ Datos obtenidos de la BD (Monthly):")
-		for _, c := range consumptions {
-			fmt.Println("Meter ID:", c.MeterID, "Periodo:", c.Period, "Consumo:", c.Consumption)
-		}
 		return consumptions, nil
 	}
 
@@ -102,9 +98,6 @@ func (r *ConsumptionRepository) GetConsumptionByPeriod(meterIDs []int, startDate
 		fmt.Println("❌ Error en consulta SQL (daily):", err)
 		return nil, err
 	}
-	fmt.Println("✅ Datos obtenidos de la BD (Daily):")
-	for _, c := range consumptions {
-		fmt.Println("Meter ID:", c.MeterID, "Periodo:", c.Period, "Consumo:", c.Consumption)
-	}
+	
 	return consumptions, nil
 }

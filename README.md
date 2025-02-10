@@ -26,9 +26,10 @@ energy-microservice/
 │   │   ├── server.go
 │   ├── services/                # Business logic
 │   │   ├── consumption.service.go
-│   ├── test/                    # Unit tests
+│   ├── test/                    # tests
 │   │   ├── consumption_repository_test.go
 │   │   ├── consumption_service_test.go
+│   │   ├── integration_test.go
 │   ├── utils/                   # Utility functions
 │   │   ├── loadCSVData.go
 ├── tmp/                         # Temporary storage (if needed)
@@ -179,6 +180,13 @@ Example output:
 ✅ Passed: Daily consumption retrieval
 --- PASS: TestGetConsumptionByPeriod (0.00s)
 PASS
+📌 Ejecutando GetConsumptionByPeriod
+🔹 Meter IDs: [1]
+🔹 Start Date: 2023-06-01 00:00:00 +0000 UTC
+🔹 End Date: 2023-06-30 23:59:59 +0000 UTC
+🔹 Period Type: monthly
+📌 Respuesta HTTP: {"period":["JUN 2023"],"data_graph":[{"meter_id":1,"address":"Dirección mock","active":[600],"reactive_inductive":[0],"reactive_capacitive":[0],"exported":[0]}]}
+--- PASS: TestGetConsumptionEndpoint (0.02s)
 ```
 
 ## **Git Flow Workflow**
@@ -204,5 +212,5 @@ git push origin develop
 
 ---
 
-This **README** provides all necessary details for setting up and running the **Energy Microservice**. Let me know if you need any modifications! 🚀
+This **README** provides all necessary details for setting up and running the **Energy Microservice**. 
 
