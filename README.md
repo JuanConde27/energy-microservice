@@ -81,6 +81,8 @@ The server will start at `http://localhost:3000`.
 
 ## **Running with Docker Compose**
 
+If you don't have Docker installed, you can download it from the [Docker Desktop website](https://www.docker.com/products/docker-desktop).
+
 To run the microservice with **Docker Compose**, execute:
 
 ```sh
